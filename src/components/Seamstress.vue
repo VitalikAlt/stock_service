@@ -34,10 +34,10 @@
 </template>
 
 <script>
-  import ReservesModal from '@/modals/Reserves'
+  import ReservesModal from '@/modals/ReservesSewer'
 
   export default {
-    name: 'Manager',
+    name: 'Seamstress',
     components: { 'reserves-modal': ReservesModal},
     data() {
       return {

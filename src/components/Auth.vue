@@ -9,10 +9,17 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <v-text-field label="Логин" v-model="login" required></v-text-field>
+                <!--<v-text-field label="Логин" v-model="login" required></v-text-field>-->
+                <v-select
+                  v-bind:items="['Мэнеджер', 'Швея', 'Бухгалтер', 'Зам. директора', 'Кладовщик']"
+                  v-model="login"
+                  label="Логин"
+                  single-line
+                  bottom
+                ></v-select>
               </v-flex>
               <v-flex xs12>
-                <v-text-field label="Пароль" type="password" v-model="password" required></v-text-field>
+                <v-text-field label="Пароль (не нужно)" type="password" v-model="password" required></v-text-field>
               </v-flex>
               <v-checkbox
                 label="Запомнить меня?"
@@ -44,7 +51,14 @@ export default {
   },
   methods: {
     signIn() {
-      this.$router.push('manager')
+      switch (this.login) {
+        case 'Мэнеджер':
+          this.$router.push('manager');
+          break;
+        case 'Швея':
+          this.$router.push('seamstress');
+          break;
+      }
     }
   }
 }

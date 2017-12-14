@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Auth from '@/components/Auth'
 import Manager from '@/components/Manager'
+import Seamstress from '@/components/Seamstress'
 
 Vue.use(Router);
 
@@ -16,6 +17,11 @@ export default new Router({
       path: '/manager',
       name: 'Manager',
       component: Manager
+    },
+    {
+      path: '/seamstress',
+      name: 'Seamstress',
+      component: Seamstress
     }
   ]
 })
