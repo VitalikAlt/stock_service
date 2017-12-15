@@ -17,9 +17,9 @@
               <td>{{ props.item.author }}</td>
               <td class="text-xs-right">{{ props.item.client }}</td>
               <td class="text-xs-right">{{ props.item.count }}</td>
-              <td class="text-xs-right">{{ props.item.created_at }}</td>
+              <td class="text-xs-right">{{ props.item.created_at | moment("DD/MM/YYYY, HH:mm") }}</td>
               <td class="text-xs-right">{{ props.item.payment }}</td>
-              <td class="text-xs-right">{{ props.item.due_date }}</td>
+              <td class="text-xs-right">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</td>
               <td class="text-xs-right">{{ props.item.payment_number }}</td>
             </template>
           </v-data-table>

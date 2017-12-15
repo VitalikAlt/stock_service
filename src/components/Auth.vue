@@ -58,6 +58,15 @@ export default {
         case 'Швея':
           this.$router.push('seamstress');
           break;
+        case 'Бухгалтер':
+          this.$router.push('booker');
+          break;
+        case 'Зам. директора':
+          this.$router.push('deputy');
+          break;
+        case 'Кладовщик':
+          this.$router.push('storekeeper');
+          break;
       }
     }
   }

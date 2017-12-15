@@ -29,8 +29,8 @@
                     <td class="text-xs-right">{{ props.item.growth }}</td>
                     <td class="text-xs-right">{{ props.item.size }}</td>
                     <td class="text-xs-right">{{ props.item.workshop }}</td>
-                    <td class="text-xs-right">{{ props.item.create_date }}</td>
-                    <td class="text-xs-right">{{ props.item.due_date }}</td>
+                    <td class="text-xs-right">{{ props.item.create_date | moment("DD/MM/YYYY, HH:mm") }}</td>
+                    <td class="text-xs-right">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</td>
                   </template>
                 </v-data-table>
               </v-tabs-content>
@@ -46,7 +46,7 @@
                     <td class="text-xs-right">{{ props.item.count }}</td>
                     <td class="text-xs-right">{{ props.item.growth }}</td>
                     <td class="text-xs-right">{{ props.item.size }}</td>
-                    <td class="text-xs-right">{{ props.item.due_date }}</td>
+                    <td class="text-xs-right">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</td>
                   </template>
                 </v-data-table>
               </v-tabs-content>
