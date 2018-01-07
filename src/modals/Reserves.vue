@@ -3,7 +3,7 @@
     <v-dialog v-model="dialog" max-width="80%" lazy>
       <v-card>
         <v-card-title class="headline">
-          Резервы:
+          Резервы: {{item.reserves}}
           <v-spacer></v-spacer>
           <v-progress-circular v-if="progress.active" indeterminate color="blue"></v-progress-circular>
         </v-card-title>
@@ -26,16 +26,16 @@
           >
             <template slot="items" slot-scope="props">
               <td :class="{editable: props.item.creator}">{{ props.item.author }}</td>
+
+              <td class="text-xs-right" :class="{editable: props.item.creator}">{{ props.item.created_at | moment("DD/MM/YYYY, HH:mm") }}</td>
+
               <td class="text-xs-right" :class="{editable: props.item.creator}">
                 <v-text-field
                   slot="input"
                   v-if="props.item.creator"
-                  placeholder="Количество"
+                  placeholder="Клиент"
                   class="right-input"
                   v-model="props.item.client"
-                  full-width
-                  single-line
-                  hide-details
                 ></v-text-field>
                 <span v-if="!props.item.creator">{{ props.item.client }}</span>
               </td>
@@ -47,14 +47,9 @@
                   placeholder="Количество"
                   class="right-input"
                   v-model="props.item.count"
-                  full-width
-                  single-line
-                  hide-details
                 ></v-text-field>
                 <span v-if="!props.item.creator">{{ props.item.count }}</span>
               </td>
-
-              <td class="text-xs-right" :class="{editable: props.item.creator}">{{ props.item.created_at | moment("DD/MM/YYYY, HH:mm") }}</td>
 
               <td class="text-xs-right" :class="{editable: props.item.creator}">
                 <div
@@ -71,35 +66,13 @@
               </td>
 
               <td class="text-xs-right" :class="{editable: props.item.creator}">
-                <v-menu
-                  lazy
-                  :close-on-content-click="false"
-                  v-model="props.item.selected"
-                  transition="scale-transition"
-                  offset-y
-                  full-width
-                  :nudge-right="40"
-                  max-width="290px"
-                  min-width="290px"
+                <v-datetime-picker
+                  :datetime="props.item.due_date"
+                  @select="val => props.item.due_date = val"
+                  v-if="props.item.creator"
+                ></v-datetime-picker>
 
-                >
-                  <v-text-field
-                    slot="activator"
-                    v-model="props.item.due_date"
-                    prepend-icon="event"
-                    :disabled="!props.item.creator"
-                    readonly
-                  ></v-text-field>
-                  <v-date-picker v-model="props.item.due_date" actions no-title scrollable actions>
-                    <template slot-scope="{ save, cancel }">
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
-                        <v-btn flat color="primary" @click="save">OK</v-btn>
-                      </v-card-actions>
-                    </template>
-                  </v-date-picker>
-                </v-menu>
+                <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
               </td>
 
               <td class="text-xs-right" :class="{editable: props.item.creator}">
@@ -108,9 +81,6 @@
                   placeholder="Номер счёта"
                   class="right-input"
                   v-model="props.item.payment_number"
-                  full-width
-                  single-line
-                  hide-details
                   v-if="props.item.creator"
                 ></v-text-field>
 
@@ -118,7 +88,7 @@
               </td>
 
               <td class="text-xs-right" :class="{editable: props.item.creator}">
-                <v-icon class="pointer" @click="deleteRow(props.item)">delete_forever</v-icon>
+                <v-icon class="pointer" @click="deleteRow(props.item)" v-if="props.item.creator">delete_forever</v-icon>
               </td>
             </template>
           </v-data-table>
@@ -136,7 +106,7 @@
 <script>
   export default {
     name: 'ReservesModal',
-    props: ['itemId', 'reservesDialog'],
+    props: ['item', 'reservesDialog'],
     data() {
       return {
         active: null,
@@ -148,9 +118,9 @@
             align: 'left',
             value: 'author'
           },
+          { text: 'Дата создания', value: 'created_at' },
           { text: 'Клиент', value: 'client' },
           { text: 'Количество', value: 'count' },
-          { text: 'Дата создания', value: 'created_at' },
           { text: 'Оплата', value: 'payment' },
           { text: 'Дата выгрузки', value: 'due_date' },
           { text: 'Номер счёта', value: 'payment_number' },
@@ -163,7 +133,7 @@
             count: 1,
             created_at: new Date(),
             payment: true,
-            due_date: null,
+            due_date: new Date(),
             payment_number: '123131asd'
           }, {
             author: 'Виталий',
@@ -171,7 +141,7 @@
             count: 2,
             created_at: new Date(),
             payment: true,
-            due_date: null,
+            due_date: new Date(),
             payment_number: '123131asd',
             creator: true
           }, {
@@ -180,7 +150,7 @@
             count: 2,
             created_at: new Date(),
             payment: true,
-            due_date: null,
+            due_date: new Date(),
             payment_number: '123131asd'
           }
         ]
@@ -201,7 +171,7 @@
         this.items.splice(this.items.indexOf(el), 1)
       },
       addRow: function() {
-        this.items.unshift({});
+        this.items.unshift({creator: true, author: 'Виталий', created_at: new Date(), due_date: new Date()});
       }
     }
   }

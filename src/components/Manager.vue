@@ -41,7 +41,7 @@
       </v-tabs-items>
     </v-tabs>
 
-    <reserves-modal :reserves-dialog="reservesDialog" :item-id="currentItem.id" @close="reservesDialog = false"></reserves-modal>
+    <reserves-modal :reserves-dialog="reservesDialog" :item="currentItem" @close="reservesDialog = false"></reserves-modal>
   </div>
 </template>
 

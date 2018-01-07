@@ -11,8 +11,8 @@
         <v-card-text>
           <v-tabs v-model="active">
             <v-tabs-bar class="grey" dark>
-              <v-tabs-item href="#manager" ripple>Менеджеры</v-tabs-item>
-              <v-tabs-item href="#workshop" ripple>Цех</v-tabs-item>
+              <v-tabs-item href="#manager" @click="status = 'manager'" ripple>Менеджеры</v-tabs-item>
+              <v-tabs-item href="#workshop" @click="status = 'workshop'" ripple>Цех</v-tabs-item>
               <v-tabs-slider color="black"></v-tabs-slider>
             </v-tabs-bar>
             <v-tabs-items>
@@ -24,13 +24,86 @@
                 >
                   <template slot="items" slot-scope="props">
                     <td>{{ props.item.author }}</td>
-                    <td class="text-xs-right">{{ props.item.name }}</td>
-                    <td class="text-xs-right">{{ props.item.count }}</td>
-                    <td class="text-xs-right">{{ props.item.growth }}</td>
-                    <td class="text-xs-right">{{ props.item.size }}</td>
-                    <td class="text-xs-right">{{ props.item.workshop }}</td>
-                    <td class="text-xs-right">{{ props.item.create_date | moment("DD/MM/YYYY, HH:mm") }}</td>
-                    <td class="text-xs-right">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Наименование"
+                        class="right-input"
+                        v-model="props.item.name"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.name }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Количество"
+                        class="right-input"
+                        v-model="props.item.count"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.count }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Рост"
+                        class="right-input"
+                        v-model="props.item.growth"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.growth }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Размер"
+                        class="right-input"
+                        v-model="props.item.size"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.size }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Цех производства"
+                        class="right-input"
+                        v-model="props.item.workshop"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.workshop }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-datetime-picker
+                        :datetime="props.item.create_date"
+                        @select="val => props.item.create_date = val"
+                        v-if="props.item.creator"
+                      ></v-datetime-picker>
+
+                      <span v-if="!props.item.creator">{{ props.item.create_date | moment("DD/MM/YYYY, HH:mm") }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-datetime-picker
+                        :datetime="props.item.due_date"
+                        @select="val => props.item.due_date = val"
+                        v-if="props.item.creator"
+                      ></v-datetime-picker>
+
+                      <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
+                    </td>
                   </template>
                 </v-data-table>
               </v-tabs-content>
@@ -42,11 +115,64 @@
                 >
                   <template slot="items" slot-scope="props">
                     <td>{{ props.item.author }}</td>
-                    <td class="text-xs-right">{{ props.item.name }}</td>
-                    <td class="text-xs-right">{{ props.item.count }}</td>
-                    <td class="text-xs-right">{{ props.item.growth }}</td>
-                    <td class="text-xs-right">{{ props.item.size }}</td>
-                    <td class="text-xs-right">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Наименование"
+                        class="right-input"
+                        v-model="props.item.name"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.name }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Количество"
+                        class="right-input"
+                        v-model="props.item.count"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.count }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Рост"
+                        class="right-input"
+                        v-model="props.item.growth"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.growth }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-text-field
+                        slot="input"
+                        placeholder="Размер"
+                        class="right-input"
+                        v-model="props.item.size"
+                        v-if="props.item.creator"
+                      ></v-text-field>
+
+                      <span v-if="!props.item.creator">{{ props.item.size }}</span>
+                    </td>
+
+                    <td class="text-xs-right">
+                      <v-datetime-picker
+                        :datetime="props.item.due_date"
+                        @select="val => props.item.due_date = val"
+                        v-if="props.item.creator"
+                      ></v-datetime-picker>
+
+                      <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
+                    </td>
                   </template>
                 </v-data-table>
               </v-tabs-content>
@@ -57,6 +183,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" flat="flat" @click.native="dialog = false">Закрыть</v-btn>
+          <v-btn color="primary" flat="flat" @click.native="addRow()">Добавить</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -71,6 +198,7 @@
       return {
         active: null,
         progress: this.$progress,
+        status: 'manager',
         managerHeaders: [
           {
             text: 'Менеджер',
@@ -164,7 +292,12 @@
       }
     },
     methods: {
+      addRow: function() {
+        if (this.status === 'manager')
+          return this.managerItems.unshift({creator: true, author: 'Виталий', create_date: new Date(), due_date: new Date()});
 
+        return this.workshopItems.unshift({creator: true, author: 'Виталий', due_date: new Date()});
+      }
     }
   }
 </script>
