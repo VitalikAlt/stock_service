@@ -9,20 +9,32 @@
       </v-tabs-bar>
       <v-tabs-items>
         <v-tabs-content id="stock">
+          <v-layout row class="container search">
+            <v-spacer></v-spacer>
+            <v-text-field
+              append-icon="search"
+              label="Поиск"
+              single-line
+              hide-details
+              v-model="search"
+            ></v-text-field>
+          </v-layout>
+
           <v-layout row class="container">
-            <v-data-table
-              v-bind:headers="headers"
-              :items="items"
-              class="elevation-1"
-            >
-              <template slot="items" slot-scope="props">
-                <td>{{ props.item.name }}</td>
-                <td class="text-xs-right">{{ props.item.count }}</td>
-                <td class="text-xs-right">{{ props.item.size }}</td>
-                <td class="text-xs-right">{{ props.item.growth }}</td>
-                <td class="text-xs-right pointer" @click="openReservesDialog(props.item)">{{ props.item.reserves }}</td>
-              </template>
-            </v-data-table>
+              <v-data-table
+                :headers="headers"
+                :items="items"
+                :search="search"
+                class="elevation-1"
+              >
+                <template slot="items" slot-scope="props">
+                  <td>{{ props.item.name }}</td>
+                  <td class="text-xs-right">{{ props.item.count }}</td>
+                  <td class="text-xs-right">{{ props.item.size }}</td>
+                  <td class="text-xs-right">{{ props.item.growth }}</td>
+                  <td class="text-xs-right pointer" @click="openReservesDialog(props.item)">{{ props.item.reserves }}</td>
+                </template>
+              </v-data-table>
           </v-layout>
         </v-tabs-content>
         <v-tabs-content id="exit">Что-то пошло не так))</v-tabs-content>
@@ -44,6 +56,9 @@
         active: null,
         reservesDialog: false,
         currentItem: 0,
+        menu: false,
+        date: null,
+        search: '',
         headers: [
           {
             text: 'Наименование',
@@ -96,5 +111,9 @@
 <style scoped>
   .pointer {
     cursor: pointer;
+  }
+
+  .search {
+    padding-bottom: 0;
   }
 </style>
