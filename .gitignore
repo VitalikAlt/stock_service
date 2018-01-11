@@ -1,15 +1,14 @@
-.DS_Store
-node_modules/
-/dist/
+# Logs
+logs
+*.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# Editor directories and files
+# Dependency directories
+node_modules
+
+#idea files
 .idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.swp
+
+frontend/node_modules
+frontend/.idea
+frontend/dist
