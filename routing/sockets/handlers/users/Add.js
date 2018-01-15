@@ -6,15 +6,11 @@ class Add extends BaseHandler {
     }
 
     async handle(params, client) {
-        if (!this.core.cfg.lang.accounts[params.role])
-            return this.complete(client, null, 'Неизвестная роль для аккаунта');
-
-        await this.core.db.users.add(params);
-        this.complete(client, 'Аккаунт успешно добавлен');
+        this.complete(client, await this.core.db.users.add(params));
     }
 
-    get paramNames() {
-        return ['login', 'password', 'role', 'name']
+    get target() {
+        return 'group';
     }
 }
 

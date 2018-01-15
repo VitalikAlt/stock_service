@@ -33,8 +33,11 @@ class BaseHandler {
     }
 
     complete(client, successMsg, errMsg) {
+        const target = (this.target === 'group')? this.core.io.to(client.role) : client;
+        console.log(this.target === 'group')
+
         if (!errMsg)
-            return client.emit(this.event, {type: 'success', result: successMsg});
+            return target.emit(this.event, {type: 'success', result: successMsg});
 
         client.emit(this.event, {type: 'error', result: errMsg})
     }
@@ -45,6 +48,10 @@ class BaseHandler {
 
     get roleNames() {
         return null
+    }
+
+    get target() {
+        return 'client'
     }
 }
 

@@ -7,11 +7,15 @@ class Delete extends BaseHandler {
 
     async handle(params, client) {
         await this.core.db.users.deleteByIds([params.id]);
-        this.complete(client, 'Аккаунт успешно удалён');
+        this.complete(client, {_id: params.id});
     }
 
     get paramNames() {
         return ['id']
+    }
+
+    get target() {
+        return 'group';
     }
 }
 

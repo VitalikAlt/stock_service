@@ -12,9 +12,10 @@ class SignIn extends BaseHandler {
             if (!user)
                 return this.complete(client, null, 'Логин или пароль неверен!');
 
-            setTimeout(() => {
-                this.complete(client, {role: user.role, id: user._id});
-            }, 5000)
+            client.join(user.role);
+            client.role = user.role;
+
+            this.complete(client, {role: user.role, id: user._id});
         } catch (err) {
             this.complete(client, null, 'Ошибка аутентификации');
         }

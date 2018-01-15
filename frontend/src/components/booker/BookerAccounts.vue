@@ -23,6 +23,7 @@
               :items="roles"
               v-model="props.item.role"
               label="Роль"
+              @input="updateRow(props.item)"
               single-line
               bottom
             ></v-select>
@@ -32,6 +33,16 @@
               slot="input"
               class="right-input"
               v-model="props.item.login"
+              @blur="updateRow(props.item)"
+            ></v-text-field>
+          </td>
+          <td class="text-xs-right">
+            <v-text-field
+              slot="input"
+              class="right-input"
+              type="password"
+              v-model="props.item.password"
+              @blur="updateRow(props.item)"
             ></v-text-field>
           </td>
           <td class="text-xs-right">
@@ -39,6 +50,7 @@
               slot="input"
               class="right-input"
               v-model="props.item.name"
+              @blur="updateRow(props.item)"
             ></v-text-field>
           </td>
           <td class="column-compressed">
@@ -69,6 +81,7 @@
           },
           { text: 'Роль', value: 'role' },
           { text: 'Логин', value: 'login' },
+          { text: 'Пароль', value: 'password' },
           { text: 'Имя', value: 'name' },
           { text: '', sortable: false, value: 'name'}
         ],
@@ -78,10 +91,14 @@
     },
     methods: {
       addRow() {
-        this.$store.dispatch('add_account');
+        this.$store.dispatch('user_add');
+      },
+      updateRow(el) {
+        console.log(el.role)
+        this.$store.dispatch('user_update', el);
       },
       deleteRow(el) {
-        this.$store.dispatch('delete_account', el);
+        this.$store.dispatch('user_delete', {id: el._id});
       }
     }
   }

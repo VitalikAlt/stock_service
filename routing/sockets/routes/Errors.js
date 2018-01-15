@@ -4,7 +4,7 @@ class Errors {
     static BAD_PARAMS(param) {
         return {
             type: 'error',
-            result: `Отсутствует поле "${param_translations[param]}" в запросе`
+            result: `Отсутствует поле "${param_translations[param] || param}" в запросе`
         }
     }
 

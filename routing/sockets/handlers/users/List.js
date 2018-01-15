@@ -12,9 +12,7 @@ class List extends BaseHandler {
             res[i]._doc.role = this.core.cfg.lang.roles[res[i].role];
         }
 
-        setTimeout(() => {
-            this.complete(client, res);
-        }, 5000);
+        this.complete(client, res);
     }
 }
 

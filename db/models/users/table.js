@@ -9,10 +9,10 @@ const users = mongoose.Schema;
 // storekeeper - кладовщик
 
 const Users = new users({
-    login: {type: String, required: true},
-    password: {type: String, required: true},
-    role: {type: String, required: true},
-    name: {type: String, required: true}
+    login: {type: String, required: false},
+    password: {type: String, required: false},
+    role: {type: String, required: false},
+    name: {type: String, required: false}
 });
 
 const UsersModel = mongoose.model('Users', Users);
