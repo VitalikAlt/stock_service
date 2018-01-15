@@ -1,12 +1,15 @@
 'use strict';
-
 global.appRoot = __dirname;
-global.p = console.log;
+
+const http = require('http');
+const io = require('socket.io');
+
 const Environment = require(appRoot + '/environment/Environment');
+const SocketManager = require('./routing/sockets/SocketManager');
 
 class Server extends Environment {
-    constructor(cb) {
-        super(cb);
+    constructor() {
+        super();
     }
 
     async init() {
@@ -22,13 +25,12 @@ class Server extends Environment {
     }
 
     createServer() {
-        const http = require('http');
         this.server = http.createServer((req, res) => this.core.routeManager.handle(req, res));
+        this.core.socketManager = new SocketManager(this.core, io(this.server));
 
         this.server.listen(this.port, () => {
             this.core.log.info(`Server listening on: ${this.host}:${this.port}`);
             this.core.stop = this.stop.bind(this);
-            this.cb(this.core)
         });
     }
 
@@ -60,4 +62,4 @@ class Server extends Environment {
     }
 }
 
-module.exports = Server;
+module.exports = new Server();

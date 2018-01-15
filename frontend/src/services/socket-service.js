@@ -1,7 +1,7 @@
 import axios from 'axios'
 const API_URL = 'http://localhost:8040';
 
-const http = {
+const socket = {
     install(Vue, options) {
       const dev = process.env.NODE_ENV === 'development';
       Vue.prototype.$http = {
@@ -39,4 +39,4 @@ const http = {
     }
 };
 
-export default http;
+export default socket;

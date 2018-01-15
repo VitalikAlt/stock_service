@@ -6,7 +6,7 @@ class RouteManager {
     }
 
     handle(req, res) {
-        this.core.log.debug(`Get ${req.method} request: ${req.url}`);
+        this.core.log.debug(`${req.method} request: ${req.url}`);
         req.sendError = this.sendError.bind(this);
 
         if (!Methods[req.method]) {
@@ -66,8 +66,6 @@ class RouteManager {
     completeError(err, req, res) {
         if (err.code === "MODULE_NOT_FOUND")
             return this.sendIndex(req, res);
-
-        console.log(err)
 
         req.sendError(res, 'UNKNOWN_ERROR', err);
     }

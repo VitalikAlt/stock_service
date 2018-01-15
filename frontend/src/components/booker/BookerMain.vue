@@ -29,9 +29,7 @@
         </v-tabs-content>
 
         <v-tabs-content id="accounts">
-          <v-layout row class="container">
-            В разработке
-          </v-layout>
+          <booker-accounts></booker-accounts>
         </v-tabs-content>
 
         <v-tabs-content id="history">
@@ -50,10 +48,14 @@
 
 <script>
   import ReservesModal from '@/modals/ReservesSewer'
+  import BookerAccounts from '@/components/booker/BookerAccounts'
 
   export default {
     name: 'Booker',
-    components: { 'reserves-modal': ReservesModal},
+    components: {
+      'reserves-modal': ReservesModal,
+      'booker-accounts': BookerAccounts
+    },
     data() {
       return {
         active: null,
@@ -95,6 +97,9 @@
           }
         ]
       }
+    },
+    created() {
+      this.$store.dispatch('user_list');
     },
     methods: {
       openReservesDialog(item) {

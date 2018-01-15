@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Auth from '@/components/Auth'
-import Booker from '@/components/Booker'
+import Booker from '@/components/booker/BookerMain'
 import Deputy from '@/components/Deputy'
 import Manager from '@/components/Manager'
 import Seamstress from '@/components/Seamstress'
 import Storekeeper from '@/components/Storekeeper'
+import ResetAdmin from '@/components/ResetAdmin'
 
 Vue.use(Router);
 
@@ -40,6 +41,11 @@ export default new Router({
       path: '/storekeeper',
       name: 'Storekeeper',
       component: Storekeeper
+    },
+    {
+      path: '/reset_admin',
+      name: 'ResetAdmin',
+      component: ResetAdmin
     }
   ]
 })

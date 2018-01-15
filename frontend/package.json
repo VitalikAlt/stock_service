@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "v-tooltip": "^2.0.0-rc.26",
     "vue": "^2.5.3",
     "vue-moment": "^3.1.0",
     "vue-router": "^3.0.1",
-    "vuetify": "^0.17.3"
+    "vue-socket.io": "^2.1.1-a",
+    "vuetify": "^0.17.3",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

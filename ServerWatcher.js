@@ -5,7 +5,7 @@ const spawn = require('child_process').spawn;
 
 let startServer = function () {
     if (instance) instance.kill();
-    instance = spawn('node', ['--harmony', 'ServerRunner.js'], {stdio: 'inherit'});
+    instance = spawn('node', ['--harmony', 'Server.js'], {stdio: 'inherit'});
 };
 
 watch('./', { recursive: true }, (evt, name) => {

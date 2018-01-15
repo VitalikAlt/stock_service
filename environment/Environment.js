@@ -1,8 +1,7 @@
 const Db = require('./../db/Db');
 
 class Environment {
-    constructor(cb) {
-        this.cb = cb;
+    constructor() {
         this.core = {};
         this.setVars();
         this.init();
@@ -45,6 +44,7 @@ class Environment {
             this.core.cfg.database = require(`./../config/database/${process.env.NODE_ENV}.json`);
             this.core.cfg.secret = require('./../config/secret/config.json');
             this.core.cfg.shared = require('./../config/shared/config.json');
+            this.core.cfg.lang = require('./../config/language/translations.json');
             this.core.log.info('Init configs success');
         } catch (err) {
             console.log('Init Configs error:', err);

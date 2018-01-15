@@ -7,6 +7,14 @@ class ErrorCodes {
         }
     }
 
+    static NO_HANDLER(param) {
+        return {
+            status: 404,
+            error: 'No handler for this request',
+            message: `no handler for this request`
+        }
+    }
+
     static UNAUTHORIZED(param) {
         return {
             status: 401,

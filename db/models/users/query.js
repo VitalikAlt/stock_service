@@ -1,6 +1,14 @@
 const User = require('./table');
 
 class UserQuery {
+    static get all() {
+        return new Promise((res, rej) => {
+            User.find({}, (err, data) => {
+                return err? rej(err) : res(data);
+            })
+        });
+    }
+
     static getById(id) {
         return new Promise((res, rej) => {
             User.find({_id: id}, (err, data) => {
@@ -63,12 +71,20 @@ class UserQuery {
         })
     }
 
+    static update(condition, params) {
+        return new Promise((res, rej) => {
+            User.update(condition, params, (err, result) => {
+                return (err)? rej(err) : res(result);
+            })
+        })
+    }
+
     static async adminReset(login, password) {
-        User.find({role: 'admin'}, (err, data) => {
+        User.find({role: 'booker'}, (err, data) => {
             if (!data[0]) {
-                return UserQuery.add({login, password, role: 'admin'})
+                return UserQuery.add({login, password, role: 'booker', name: 'Бухгалтер'})
             } else {
-                return UserQuery.updatePassword(data[0].login, password)
+                return UserQuery.update({role: 'booker', login: data[0].login}, {login, password})
             }
         })
     }

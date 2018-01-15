@@ -4,19 +4,21 @@
       <v-card>
         <v-card-title>
           <span class="headline">Авторизация</span>
+          <v-spacer></v-spacer>
+          <v-progress-circular v-if="$progress.active" indeterminate color="black" style="margin-right: 8px;" v-tooltip.bottom="$progress.status"></v-progress-circular>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
-                <!--<v-text-field label="Логин" v-model="login" required></v-text-field>-->
-                <v-select
-                  v-bind:items="['Мэнеджер', 'Швея', 'Бухгалтер', 'Зам. директора', 'Кладовщик']"
-                  v-model="login"
-                  label="Логин"
-                  single-line
-                  bottom
-                ></v-select>
+                <v-text-field label="Логин" v-model="login" required></v-text-field>
+                <!--<v-select-->
+                  <!--v-bind:items="['Мэнеджер', 'Швея', 'Бухгалтер', 'Зам. директора', 'Кладовщик']"-->
+                  <!--v-model="login"-->
+                  <!--label="Логин"-->
+                  <!--single-line-->
+                  <!--bottom-->
+                <!--&gt;</v-select>-->
               </v-flex>
               <v-flex xs12>
                 <v-text-field label="Пароль (не нужно)" type="password" v-model="password" required></v-text-field>
@@ -45,12 +47,16 @@ export default {
     return {
       dialog: true,
       rememberMe: false,
-      login: '',
-      password: ''
+      login: 'booker1',
+      password: '2',
+      progress: this.$progress,
+      account: this.$store.state.account
     }
   },
   methods: {
-    signIn() {
+    async signIn() {
+      this.$store.dispatch('sign_in', {login: this.login, password: this.password});
+
       switch (this.login) {
         case 'Мэнеджер':
           this.$router.push('manager');
@@ -68,6 +74,14 @@ export default {
           this.$router.push('storekeeper');
           break;
       }
+    }
+  },
+  computed: {
+    role() {
+      if (this.$store.state.account.role)
+        console.log('asdasd')
+
+      return this.$store.state.account.role;
     }
   }
 }
