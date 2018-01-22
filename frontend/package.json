@@ -2,7 +2,7 @@
   "name": "stock_service",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "v.zhukov <v.zhukov@socialquantum.com>",
+  "author": "v.zhukov <vitalikAlt@github.com>",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -13,6 +13,7 @@
     "axios": "^0.17.1",
     "v-tooltip": "^2.0.0-rc.26",
     "vue": "^2.5.3",
+    "vue-cookie": "^1.1.4",
     "vue-moment": "^3.1.0",
     "vue-router": "^3.0.1",
     "vue-socket.io": "^2.1.1-a",

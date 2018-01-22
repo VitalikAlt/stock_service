@@ -6,16 +6,16 @@ class Delete extends BaseHandler {
     }
 
     async handle(params, client) {
-        await this.core.db.users.deleteByIds([params.id]);
-        this.complete(client, {_id: params.id});
+        await this.core.db.items.deleteById(params._id);
+        this.complete(client, {_id: params._id});
     }
 
     get paramNames() {
-        return ['id']
+        return ['_id']
     }
 
     get target() {
-        return 'role';
+        return 'auth';
     }
 
     get roleNames() {

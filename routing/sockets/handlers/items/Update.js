@@ -1,21 +1,21 @@
 const BaseHandler = require('../../BaseHandler');
 
-class Delete extends BaseHandler {
+class Update extends BaseHandler {
     constructor(core, event) {
         super(core, event);
     }
 
     async handle(params, client) {
-        await this.core.db.users.deleteByIds([params.id]);
-        this.complete(client, {_id: params.id});
+        await this.core.db.items.update({_id: params._id}, params);
+        this.complete(client, params);
     }
 
     get paramNames() {
-        return ['id']
+        return ['_id']
     }
 
     get target() {
-        return 'role';
+        return 'auth';
     }
 
     get roleNames() {
@@ -23,4 +23,4 @@ class Delete extends BaseHandler {
     }
 }
 
-module.exports = Delete;
+module.exports = Update;

@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const users = require('./models/users/query');
+const items = require('./models/items/query');
+const reserves = require('./models/reserves/query');
+const workshopReserves = require('./models/workshop_reserves/query');
 
 mongoose.Promise = global.Promise;
 
@@ -11,6 +14,18 @@ class Db {
 
     static get users() {
         return users;
+    }
+
+    static get items() {
+        return items;
+    }
+
+    static get reserves() {
+        return reserves;
+    }
+
+    static get workshopReserves() {
+        return workshopReserves;
     }
 }
 

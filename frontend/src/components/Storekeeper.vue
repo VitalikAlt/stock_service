@@ -1,20 +1,32 @@
 <template>
   <div>
     <v-tabs v-model="active">
-      <v-tabs-bar class="grey" dark>
+      <v-tabs-bar class="indigo lighten-1 elevation-3" dark>
         <v-tabs-item href="#shipment" ripple>Отгрузка</v-tabs-item>
         <v-tabs-item href="#stock" ripple>Склад</v-tabs-item>
         <v-spacer></v-spacer>
         <v-tabs-item href="#exit" @click="exit" ripple>Выход</v-tabs-item>
-        <v-tabs-slider color="black"></v-tabs-slider>
+        <v-tabs-slider color="amber"></v-tabs-slider>
       </v-tabs-bar>
       <v-tabs-items>
         <v-tabs-content id="shipment">
+          <v-layout row class="container search">
+            <v-spacer></v-spacer>
+            <v-text-field
+              append-icon="search"
+              label="Поиск"
+              single-line
+              hide-details
+              v-model="shipmentSearch"
+            ></v-text-field>
+          </v-layout>
           <v-layout row class="container">
             <v-data-table
               v-bind:headers="shipmentHeaders"
-              :items="shipmentItems"
-              class="elevation-1"
+              :items="userData.paid_reserves"
+              :search="shipmentSearch"
+              :loading="$progress.queue.indexOf('lookup_items') !== -1"
+              class="elevation-2"
             >
               <template slot="items" slot-scope="props">
                 <td>{{ props.item.name }}</td>
@@ -29,10 +41,22 @@
         </v-tabs-content>
 
         <v-tabs-content id="stock">
+          <v-layout row class="container search">
+            <v-spacer></v-spacer>
+            <v-text-field
+              append-icon="search"
+              label="Поиск"
+              single-line
+              hide-details
+              v-model="stockSearch"
+            ></v-text-field>
+          </v-layout>
           <v-layout row class="container">
             <v-data-table
               v-bind:headers="stockHeaders"
-              :items="stockItems"
+              :items="userData.items"
+              :search="stockSearch"
+              :loading="$progress.queue.indexOf('lookup_items') !== -1"
               class="elevation-1"
             >
               <template slot="items" slot-scope="props">
@@ -47,8 +71,6 @@
         <v-tabs-content id="exit">Что-то пошло не так))</v-tabs-content>
       </v-tabs-items>
     </v-tabs>
-
-    <reserves-modal :reserves-dialog="reservesDialog" :item-id="currentItem.id" @close="reservesDialog = false"></reserves-modal>
   </div>
 </template>
 
@@ -58,8 +80,9 @@
     data() {
       return {
         active: null,
-        reservesDialog: false,
-        currentItem: 0,
+        shipmentSearch: '',
+        stockSearch: '',
+        userData: this.$store.state.userData,
         shipmentHeaders: [
           {
             text: 'Наименование',
@@ -81,64 +104,16 @@
           { text: 'Количество', value: 'count' },
           { text: 'Размер', value: 'size' },
           { text: 'Рост', value: 'growth' }
-        ],
-        shipmentItems: [
-          {
-            id: 0,
-            name: 'test1',
-            count: 10,
-            size: '44:46',
-            growth: 1,
-            client: 'Клиент1',
-            due_date: new Date()
-          }, {
-            id: 1,
-            name: 'test2',
-            count: 5,
-            size: '44:46',
-            growth: 3,
-            client: 'Клиент2',
-            due_date: new Date()
-          }, {
-            id: 2,
-            name: 'test3',
-            count: 15,
-            size: '48:50',
-            growth: 2,
-            client: 'Клиент1',
-            due_date: new Date()
-          }
-        ],
-        stockItems: [
-          {
-            id: 0,
-            name: 'test1',
-            count: 10,
-            size: '44:46',
-            growth: 1
-          }, {
-            id: 1,
-            name: 'test2',
-            count: 5,
-            size: '44:46',
-            growth: 3
-          }, {
-            id: 2,
-            name: 'test3',
-            count: 15,
-            size: '48:50',
-            growth: 2
-          }
         ]
       }
     },
+    created() {
+      this.$store.dispatch('lookup_items');
+      this.$store.dispatch('lookup_paid_reserves')
+    },
     methods: {
-      openReservesDialog(item) {
-        this.currentItem = item;
-        this.reservesDialog = true;
-      },
       exit() {
-        this.$router.back()
+        this.$store.dispatch('sign_out')
       }
     }
   }

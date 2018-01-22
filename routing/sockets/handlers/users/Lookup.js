@@ -14,6 +14,10 @@ class List extends BaseHandler {
 
         this.complete(client, res);
     }
+
+    get roleNames() {
+        return ['booker']
+    }
 }
 
 module.exports = List;

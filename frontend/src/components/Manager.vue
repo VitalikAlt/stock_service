@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-tabs v-model="active">
-      <v-tabs-bar class="grey" dark>
+      <v-tabs-bar class="indigo lighten-1 elevation-3" dark>
         <v-tabs-item href="#stock" ripple>Каталог</v-tabs-item>
         <v-spacer></v-spacer>
         <v-tabs-item href="#exit" @click="exit" ripple>Выход</v-tabs-item>
-        <v-tabs-slider color="black"></v-tabs-slider>
+        <v-tabs-slider color="amber"></v-tabs-slider>
       </v-tabs-bar>
       <v-tabs-items>
         <v-tabs-content id="stock">
@@ -23,16 +23,17 @@
           <v-layout row class="container">
               <v-data-table
                 :headers="headers"
-                :items="items"
+                :items="userData.items"
                 :search="search"
-                class="elevation-1"
+                :loading="$progress.queue.indexOf('lookup_items') !== -1"
+                class="elevation-2"
               >
                 <template slot="items" slot-scope="props">
                   <td>{{ props.item.name }}</td>
                   <td class="text-xs-right">{{ props.item.count }}</td>
                   <td class="text-xs-right">{{ props.item.size }}</td>
                   <td class="text-xs-right">{{ props.item.growth }}</td>
-                  <td class="text-xs-right pointer" @click="openReservesDialog(props.item)">{{ props.item.reserves }}</td>
+                  <td class="text-xs-right" style="cursor: pointer" @click="openReservesDialog(props.item)">{{ props.item.reserves }}</td>
                 </template>
               </v-data-table>
           </v-layout>
@@ -56,8 +57,6 @@
         active: null,
         reservesDialog: false,
         currentItem: 0,
-        menu: false,
-        date: null,
         search: '',
         headers: [
           {
@@ -70,39 +69,20 @@
           { text: 'Рост', value: 'growth' },
           { text: 'Резервы', value: 'reserves' }
         ],
-        items: [
-          {
-            id: 0,
-            name: 'test1',
-            count: 10,
-            size: '44:46',
-            growth: 1,
-            reserves: 5
-          }, {
-            id: 1,
-            name: 'test2',
-            count: 5,
-            size: '44:46',
-            growth: 3,
-            reserves: 15
-          }, {
-            id: 2,
-            name: 'test3',
-            count: 15,
-            size: '48:50',
-            growth: 2,
-            reserves: 10
-          }
-        ]
+        userData: this.$store.state.userData
       }
+    },
+    created() {
+      this.$store.dispatch('lookup_items')
     },
     methods: {
       openReservesDialog(item) {
         this.currentItem = item;
+        this.$store.dispatch('lookup_reserves', {item_id: item._id});
         this.reservesDialog = true;
       },
       exit() {
-        this.$router.back()
+        this.$store.dispatch('sign_out')
       }
     }
   }

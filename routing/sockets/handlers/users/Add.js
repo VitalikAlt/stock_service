@@ -10,7 +10,11 @@ class Add extends BaseHandler {
     }
 
     get target() {
-        return 'group';
+        return 'role';
+    }
+
+    get roleNames() {
+        return ['booker']
     }
 }
 

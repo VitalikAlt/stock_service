@@ -34,6 +34,7 @@
             no-title
             scrollable
             actions
+            locale="ru"
             @input="checkHours"
           ></v-date-picker>
         </v-tabs-content>
@@ -45,6 +46,7 @@
             no-title
             scrollable
             format="24hr"
+            locale="ru"
             actions
             @input="checkMinutes"
           ></v-time-picker>
@@ -57,13 +59,14 @@
 <script>
   export default {
     name: 'ReservesModal',
-    props: ['datetime'],
+    props: ['datetime', 'id'],
     data() {
       return {
         dateModel: '',
         timeModel: '',
         menu:false,
-        selectedTab:"calendar"
+        selectedTab:"calendar",
+        updated: false
       }
     },
     watch: {
@@ -81,6 +84,9 @@
         return new Date(this.dateModel+' '+this.timeModel+':00');
       },
       formatedDate() {
+        if (!this.datetime && !this.updated)
+          return;
+
         const datetime = new Date(this.dateModel+' '+this.timeModel+':00');
         return this.$moment(datetime).format("DD/MM/YYYY HH:mm")
       }
@@ -91,16 +97,19 @@
           this.timeModel=val;
           this.$refs.timer.selectingHour = true;
           this.selectedTab="calendar";
-          this.menu=false;
-          this.$emit('update',this.actualDatetime)
+          //click on position outside modal may close modal (datetime can be outside modal)
+          setTimeout(() => this.menu=false, 100);
+          this.$emit('update', this.actualDatetime);
         }
       },
       checkHours(val) {
         this.dateModel=val;
-        this.selectedTab="timer"
+        this.selectedTab="timer";
+        this.$emit('update', this.actualDatetime);
       }
     },
     created() {
+      console.log(this.datetime, this.id, this.updated);
       const datetime = this.datetime || new Date();
       this.dateModel = this.$moment(datetime).format("YYYY-MM-DD");
       this.timeModel = this.$moment(datetime).format("HH:mm:ss");

@@ -1,180 +1,222 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" max-width="80%" lazy>
+    <v-dialog v-model="dialog" max-width="100%" scrollable>
       <v-card>
         <v-card-title class="headline">
-          Резервы:
+          Резервы: {{item.reserves}}
           <v-spacer></v-spacer>
-          <v-progress-circular v-if="progress.active" indeterminate color="blue"></v-progress-circular>
+          <v-progress-circular v-if="progress.active" indeterminate color="blue" v-tooltip.bottom="progress.status"></v-progress-circular>
         </v-card-title>
 
         <v-card-text>
-          <v-tabs v-model="active">
-            <v-tabs-bar class="grey" dark>
-              <v-tabs-item href="#manager" @click="status = 'manager'" ripple>Менеджеры</v-tabs-item>
-              <v-tabs-item href="#workshop" @click="status = 'workshop'" ripple>Цех</v-tabs-item>
-              <v-tabs-slider color="black"></v-tabs-slider>
+          <v-tabs v-model="active" grow>
+            <v-tabs-bar class="indigo lighten-1 elevation-3" dark>
+              <v-tabs-item href="#manager" @click="currentTable = 'reserves'" ripple>Менеджеры</v-tabs-item>
+              <v-tabs-item href="#workshop" @click="currentTable = 'workshop_reserves'" ripple>Цех</v-tabs-item>
+              <v-tabs-slider color="amber"></v-tabs-slider>
             </v-tabs-bar>
             <v-tabs-items>
               <v-tabs-content id="manager">
-                <v-data-table
-                  v-bind:headers="managerHeaders"
-                  :items.sync="managerItems"
-                  class="elevation-1"
-                >
-                  <template slot="items" slot-scope="props">
-                    <td>{{ props.item.author }}</td>
+                <v-layout row>
+                  <v-spacer></v-spacer>
+                  <v-text-field
+                    append-icon="search"
+                    label="Поиск"
+                    single-line
+                    hide-details
+                    v-model="managerSearch"
+                  ></v-text-field>
+                </v-layout>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Наименование"
-                        class="right-input"
-                        v-model="props.item.name"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                <v-layout row>
+                  <v-data-table
+                    v-bind:headers="managerHeaders"
+                    :items.sync="userData.reserves"
+                    :pagination.sync="pagination"
+                    :search="managerSearch"
+                    :loading="$progress.queue.indexOf('lookup_reserves') !== -1"
+                    class="elevation-2"
+                  >
+                    <template slot="items" slot-scope="props">
+                      <td>{{ props.item.author }}</td>
 
-                      <span v-if="!props.item.creator">{{ props.item.name }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.name"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Количество"
-                        class="right-input"
-                        v-model="props.item.count"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.name }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.count }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.count"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Рост"
-                        class="right-input"
-                        v-model="props.item.growth"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.count }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.growth }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.growth"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Размер"
-                        class="right-input"
-                        v-model="props.item.size"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.growth }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.size }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.size"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Цех производства"
-                        class="right-input"
-                        v-model="props.item.workshop"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.size }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.workshop }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.workshop"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-datetime-picker
-                        :datetime="props.item.create_date"
-                        @select="val => props.item.create_date = val"
-                        v-if="props.item.creator"
-                      ></v-datetime-picker>
+                        <span v-if="!props.item.creator">{{ props.item.workshop }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.create_date | moment("DD/MM/YYYY, HH:mm") }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-datetime-picker
 
-                    <td class="text-xs-right">
-                      <v-datetime-picker
-                        :datetime="props.item.due_date"
-                        @select="val => props.item.due_date = val"
-                        v-if="props.item.creator"
-                      ></v-datetime-picker>
+                          :id="props.item.created_at"
+                          :datetime="props.item.create_date"
+                          @update="(val) => {props.item.create_date = val; updateRow(props.item)}"
+                          v-if="props.item.creator"
+                        ></v-datetime-picker>
 
-                      <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
-                    </td>
-                  </template>
-                </v-data-table>
+                        <span v-if="!props.item.creator">{{ props.item.create_date | moment("DD/MM/YYYY, HH:mm") }}</span>
+                      </td>
+
+                      <td class="text-xs-right">
+                        <v-datetime-picker
+                          :datetime="props.item.due_date"
+                          @update="(val) => {props.item.due_date = val; updateRow(props.item)}"
+                          v-if="props.item.creator"
+                        ></v-datetime-picker>
+
+                        <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
+                      </td>
+
+                      <td class="text-xs-right">
+                        <v-icon class="delete-action" @click="deleteRow(props.item)" v-if="props.item.creator">delete_forever</v-icon>
+                      </td>
+                    </template>
+                  </v-data-table>
+                </v-layout>
               </v-tabs-content>
               <v-tabs-content id="workshop">
-                <v-data-table
-                  v-bind:headers="workshopHeaders"
-                  :items.sync="workshopItems"
-                  class="elevation-1"
-                >
-                  <template slot="items" slot-scope="props">
-                    <td>{{ props.item.author }}</td>
+                <v-layout row>
+                  <v-spacer></v-spacer>
+                  <v-text-field
+                    append-icon="search"
+                    label="Поиск"
+                    single-line
+                    hide-details
+                    v-model="workshopSearch"
+                  ></v-text-field>
+                </v-layout>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Наименование"
-                        class="right-input"
-                        v-model="props.item.name"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                <v-layout row>
+                  <v-data-table
+                    v-bind:headers="workshopHeaders"
+                    :items.sync="userData.workshop_reserves"
+                    :pagination.sync="pagination"
+                    :search="workshopSearch"
+                    :loading="$progress.queue.indexOf('lookup_workshop_reserves') !== -1"
+                    class="elevation-1"
+                  >
+                    <template slot="items" slot-scope="props">
+                      <td>{{ props.item.author }}</td>
 
-                      <span v-if="!props.item.creator">{{ props.item.name }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.name"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Количество"
-                        class="right-input"
-                        v-model="props.item.count"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.name }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.count }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.count"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Рост"
-                        class="right-input"
-                        v-model="props.item.growth"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.count }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.growth }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.growth"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-text-field
-                        slot="input"
-                        placeholder="Размер"
-                        class="right-input"
-                        v-model="props.item.size"
-                        v-if="props.item.creator"
-                      ></v-text-field>
+                        <span v-if="!props.item.creator">{{ props.item.growth }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.size }}</span>
-                    </td>
+                      <td class="text-xs-right">
+                        <v-text-field
+                          slot="input"
+                          class="right-input"
+                          v-model="props.item.size"
+                          @blur="updateRow(props.item)"
+                          v-if="props.item.creator"
+                        ></v-text-field>
 
-                    <td class="text-xs-right">
-                      <v-datetime-picker
-                        :datetime="props.item.due_date"
-                        @select="val => props.item.due_date = val"
-                        v-if="props.item.creator"
-                      ></v-datetime-picker>
+                        <span v-if="!props.item.creator">{{ props.item.size }}</span>
+                      </td>
 
-                      <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
-                    </td>
-                  </template>
-                </v-data-table>
+                      <td class="text-xs-right">
+                        <v-datetime-picker
+                          :datetime="props.item.due_date"
+                          @update="(val) => {props.item.create_date = val; updateRow(props.item)}"
+                          v-if="props.item.creator"
+                        ></v-datetime-picker>
+
+                        <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
+                      </td>
+
+                      <td class="text-xs-right">
+                        <v-icon class="delete-action" @click="deleteRow(props.item)" v-if="props.item.creator">delete_forever</v-icon>
+                      </td>
+                    </template>
+                  </v-data-table>
+                </v-layout>
               </v-tabs-content>
             </v-tabs-items>
           </v-tabs>
@@ -193,12 +235,16 @@
 <script>
   export default {
     name: 'ReservesSewerModal',
-    props: ['itemId', 'reservesDialog'],
+    props: ['item', 'reservesDialog'],
     data() {
       return {
         active: null,
+        managerSearch: '',
+        workshopSearch: '',
+        pagination: {sortBy: ''},
         progress: this.$progress,
-        status: 'manager',
+        currentTable: 'reserves',
+        userData: this.$store.state.userData,
         managerHeaders: [
           {
             text: 'Менеджер',
@@ -224,61 +270,21 @@
           { text: 'Рост', value: 'grow' },
           { text: 'Размер', value: 'size' },
           { text: 'Дата', value: 'due_date' }
-        ],
-        managerItems: [
-          {
-            author: 'Виталий',
-            name: 'Товар1',
-            count: 5,
-            size: '44:46',
-            growth: 1,
-            workshop: 1,
-            create_date: new Date(),
-            due_date: new Date()
-          }, {
-            author: 'Виталий',
-            name: 'Товар1',
-            count: 15,
-            size: '48:50',
-            growth: 1,
-            workshop: 1,
-            create_date: new Date(),
-            due_date: new Date()
-          }, {
-            author: 'Виталий',
-            name: 'Товар2',
-            count: 10,
-            size: '44:46',
-            growth: 1,
-            workshop: 1,
-            create_date: new Date(),
-            due_date: new Date()
-          }
-        ],
-        workshopItems: [
-          {
-            author: 'Виталий',
-            name: 'Товар1',
-            count: 10,
-            size: '44:46',
-            growth: 1,
-            due_date: new Date()
-          }, {
-            author: 'Виталий',
-            name: 'Товар1',
-            count: 15,
-            size: '48:50',
-            growth: 1,
-            due_date: new Date()
-          }, {
-            author: 'Виталий',
-            name: 'Товар2',
-            count: 5,
-            size: '44:46',
-            growth: 1,
-            due_date: new Date()
-          }
         ]
+      }
+    },
+    created() {
+
+    },
+    methods: {
+      addRow: function() {
+        this.$store.dispatch(`add_${this.currentTable}`, {item_id: this.item._id});
+      },
+      updateRow(el) {
+        this.$store.dispatch(`update_${this.currentTable}`, el);
+      },
+      deleteRow(el) {
+        this.$store.dispatch(`delete_${this.currentTable}`, {_id: el._id});
       }
     },
     computed: {
@@ -291,14 +297,6 @@
         }
       }
     },
-    methods: {
-      addRow: function() {
-        if (this.status === 'manager')
-          return this.managerItems.unshift({creator: true, author: 'Виталий', create_date: new Date(), due_date: new Date()});
-
-        return this.workshopItems.unshift({creator: true, author: 'Виталий', due_date: new Date()});
-      }
-    }
   }
 </script>
 

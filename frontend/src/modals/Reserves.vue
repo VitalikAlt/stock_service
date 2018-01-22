@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-dialog v-model="dialog" max-width="80%" lazy>
+    <v-dialog v-model="dialog">
       <v-card>
         <v-card-title class="headline">
           Резервы: {{item.reserves}}
           <v-spacer></v-spacer>
-          <v-progress-circular v-if="progress.active" indeterminate color="blue"></v-progress-circular>
+          <v-progress-circular v-if="progress.active" indeterminate color="blue" ></v-progress-circular>
         </v-card-title>
         <v-card-text>
           <v-layout row>
@@ -20,68 +20,70 @@
           </v-layout>
           <v-data-table
             :headers="headers"
-            :items.sync="items"
+            :items.sync="userData.reserves"
+            :pagination.sync="pagination"
             :search="search"
             class="elevation-1"
           >
             <template slot="items" slot-scope="props">
               <td :class="{editable: props.item.creator}">{{ props.item.author }}</td>
 
-              <td class="text-xs-right" :class="{editable: props.item.creator}">{{ props.item.created_at | moment("DD/MM/YYYY, HH:mm") }}</td>
+              <td class="text-xs-right">{{ props.item.created_at | moment("DD/MM/YYYY, HH:mm") }}</td>
 
-              <td class="text-xs-right" :class="{editable: props.item.creator}">
+              <td class="text-xs-right">
                 <v-text-field
                   slot="input"
                   v-if="props.item.creator"
-                  placeholder="Клиент"
-                  class="right-input"
-                  v-model="props.item.client"
-                ></v-text-field>
-                <span v-if="!props.item.creator">{{ props.item.client }}</span>
-              </td>
-
-              <td class="text-xs-right" :class="{editable: props.item.creator}">
-                <v-text-field
-                  slot="input"
-                  v-if="props.item.creator"
-                  placeholder="Количество"
                   class="right-input"
                   v-model="props.item.count"
+                  @blur="updateRow(props.item)"
                 ></v-text-field>
                 <span v-if="!props.item.creator">{{ props.item.count }}</span>
               </td>
 
-              <td class="text-xs-right" :class="{editable: props.item.creator}">
+              <td class="text-xs-right">
+                <v-text-field
+                  slot="input"
+                  v-if="props.item.creator"
+                  class="right-input"
+                  v-model="props.item.client"
+                  @blur="updateRow(props.item)"
+                ></v-text-field>
+
+                <span v-if="!props.item.creator">*******</span>
+              </td>
+
+              <td class="text-xs-right">
                 <div
                   class="pointer"
                   style="color: darkgreen"
                   v-if="props.item.payment"
-                  @click="props.item.creator? props.item.payment = !props.item.payment : null"
+                  @click="changePaymentStatus(props.item)"
                 >Да</div>
                 <div
                   class="pointer"
                   v-if="!props.item.payment"
-                  @click="props.item.creator? props.item.payment = !props.item.payment : null"
+                  @click="changePaymentStatus(props.item)"
                 >Нет</div>
               </td>
 
-              <td class="text-xs-right" :class="{editable: props.item.creator}">
+              <td class="text-xs-right">
                 <v-datetime-picker
                   :datetime="props.item.due_date"
-                  @select="val => props.item.due_date = val"
+                  @update="(val) => {props.item.due_date = val; updateRow(props.item)}"
                   v-if="props.item.creator"
                 ></v-datetime-picker>
 
                 <span v-if="!props.item.creator">{{ props.item.due_date | moment("DD/MM/YYYY, HH:mm") }}</span>
               </td>
 
-              <td class="text-xs-right" :class="{editable: props.item.creator}">
+              <td class="text-xs-right">
                 <v-text-field
                   slot="input"
-                  placeholder="Номер счёта"
                   class="right-input"
                   v-model="props.item.payment_number"
                   v-if="props.item.creator"
+                  @blur="updateRow(props.item)"
                 ></v-text-field>
 
                 <span v-if="!props.item.creator">{{ props.item.payment_number }}</span>
@@ -111,6 +113,7 @@
       return {
         active: null,
         progress: this.$progress,
+        pagination: {sortBy: ''},
         search: '',
         headers: [
           {
@@ -119,41 +122,14 @@
             value: 'author'
           },
           { text: 'Дата создания', value: 'created_at' },
-          { text: 'Клиент', value: 'client' },
           { text: 'Количество', value: 'count' },
+          { text: 'Клиент', value: 'client' },
           { text: 'Оплата', value: 'payment' },
           { text: 'Дата выгрузки', value: 'due_date' },
           { text: 'Номер счёта', value: 'payment_number' },
           { text: '', sortable: false}
         ],
-        items: [
-          {
-            author: 'Виталий',
-            client: 'Алексей',
-            count: 1,
-            created_at: new Date(),
-            payment: true,
-            due_date: new Date(),
-            payment_number: '123131asd'
-          }, {
-            author: 'Виталий',
-            client: 'Алексей',
-            count: 2,
-            created_at: new Date(),
-            payment: true,
-            due_date: new Date(),
-            payment_number: '123131asd',
-            creator: true
-          }, {
-            author: 'Виталий',
-            client: 'Алексей',
-            count: 2,
-            created_at: new Date(),
-            payment: true,
-            due_date: new Date(),
-            payment_number: '123131asd'
-          }
-        ]
+        userData: this.$store.state.userData
       }
     },
     computed: {
@@ -167,11 +143,21 @@
       }
     },
     methods: {
-      deleteRow: function(el) {
-        this.items.splice(this.items.indexOf(el), 1)
-      },
       addRow: function() {
-        this.items.unshift({creator: true, author: 'Виталий', created_at: new Date(), due_date: new Date()});
+        this.$store.dispatch('add_reserves', {item_id: this.item._id});
+      },
+      updateRow(el) {
+        this.$store.dispatch('update_reserves', el);
+      },
+      deleteRow: function(el) {
+        this.$store.dispatch('delete_reserves', {_id: el._id});
+      },
+      changePaymentStatus(el) {
+        if (!el.creator)
+          return;
+
+        el.payment = !el.payment;
+        this.updateRow(el);
       }
     }
   }
@@ -188,9 +174,5 @@
 
   .pointer {
     cursor: pointer;
-  }
-
-  .editable {
-    background-color: #d8d8d896;
   }
 </style>

@@ -1,10 +1,10 @@
 const Map = require('./routes/Map');
+const cookie = require('cookie');
 
 class SocketManager {
     constructor(core, io) {
         this.core = core;
         this.core.io = io;
-        this.handlers = [];
         this.init();
     }
 
@@ -13,8 +13,7 @@ class SocketManager {
             this.registerNewClient(client);
 
             for (const route in Map) {
-                this.handlers[route] = new Map[route](this.core, route);
-                client.on(route, (data) => this.handlers[route].process(client, data));
+                client.on(route, (data) => (new Map[route](this.core, route)).process(client, data));
             }
 
             client.on('disconnect', this.endClientSession);

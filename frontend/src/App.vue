@@ -1,5 +1,6 @@
 <template>
   <v-app light class="main">
+    <!--<div class="background"></div>-->
     <div class="alerts">
       <v-alert v-for="(alert, index) in alerts"
                :key=index
@@ -31,6 +32,15 @@
     height: 100vh;
     margin: 0;
     padding: 0;
+    background: linear-gradient(#2980b9,#2c3e50);
+  }
+
+  .background {
+    z-index: 0;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#2980b9,#2c3e50);
   }
 
   .alerts {
@@ -56,6 +66,18 @@
 
   .column-compressed {
     width: 20px
+  }
+
+  .table-select .input-group__selections__comma{
+    font-size: 13px;
+  }
+
+  .delete-action {
+    cursor: pointer;
+  }
+
+  .delete-action:hover {
+    color: red;
   }
 
   .tooltip {

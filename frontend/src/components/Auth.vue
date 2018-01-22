@@ -5,34 +5,29 @@
         <v-card-title>
           <span class="headline">Авторизация</span>
           <v-spacer></v-spacer>
-          <v-progress-circular v-if="$progress.active" indeterminate color="black" style="margin-right: 8px;" v-tooltip.bottom="$progress.status"></v-progress-circular>
+          <v-progress-circular v-if="progress.active" indeterminate color="black" style="margin-right: 8px;" v-tooltip.bottom="progress.status"></v-progress-circular>
         </v-card-title>
         <v-card-text>
           <v-container grid-list-md>
-            <v-layout wrap>
+            <v-form v-model="valid" ref="authForm">
               <v-flex xs12>
-                <v-text-field label="Логин" v-model="login" required></v-text-field>
-                <!--<v-select-->
-                  <!--v-bind:items="['Мэнеджер', 'Швея', 'Бухгалтер', 'Зам. директора', 'Кладовщик']"-->
-                  <!--v-model="login"-->
-                  <!--label="Логин"-->
-                  <!--single-line-->
-                  <!--bottom-->
-                <!--&gt;</v-select>-->
+                <v-text-field label="Логин" v-model="login" :rules="defaultRule" @keyup.enter="signIn" autofocus></v-text-field>
               </v-flex>
+
               <v-flex xs12>
-                <v-text-field label="Пароль (не нужно)" type="password" v-model="password" required></v-text-field>
+                <v-text-field label="Пароль" type="password" v-model="password" :rules="defaultRule" @keyup.enter="signIn"></v-text-field>
               </v-flex>
+
               <v-checkbox
                 label="Запомнить меня?"
                 v-model="rememberMe"
               ></v-checkbox>
-            </v-layout>
+            </v-form>
           </v-container>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" flat @click="signIn">Войти</v-btn>
+          <v-btn color="blue darken-1" flat @click="signIn" :disablde="valid">Войти</v-btn>
           <v-spacer></v-spacer>
         </v-card-actions>
       </v-card>
@@ -46,42 +41,23 @@ export default {
   data () {
     return {
       dialog: true,
-      rememberMe: false,
+      valid: false,
+      rememberMe: true,
       login: 'booker1',
       password: '2',
       progress: this.$progress,
-      account: this.$store.state.account
+      account: this.$store.state.account,
+
+      defaultRule: [
+        (v) => !!v || 'Поле обязательно для заполнения',
+        (v) => v && v.length <= 20 || 'Не более 20 символов'
+      ]
     }
   },
   methods: {
-    async signIn() {
-      this.$store.dispatch('sign_in', {login: this.login, password: this.password});
-
-      switch (this.login) {
-        case 'Мэнеджер':
-          this.$router.push('manager');
-          break;
-        case 'Швея':
-          this.$router.push('seamstress');
-          break;
-        case 'Бухгалтер':
-          this.$router.push('booker');
-          break;
-        case 'Зам. директора':
-          this.$router.push('deputy');
-          break;
-        case 'Кладовщик':
-          this.$router.push('storekeeper');
-          break;
-      }
-    }
-  },
-  computed: {
-    role() {
-      if (this.$store.state.account.role)
-        console.log('asdasd')
-
-      return this.$store.state.account.role;
+    signIn() {
+      console.log(this.rememberMe)
+      this.$store.dispatch('sign_in', {login: this.login, password: this.password, remember: this.rememberMe});
     }
   }
 }

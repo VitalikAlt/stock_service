@@ -1,4 +1,4 @@
-const BaseHandler = require('../../BaseHandler');
+const BaseHandler = require('../BaseHandler');
 
 class ResetAdmin extends BaseHandler {
     constructor(core, event) {
@@ -6,7 +6,6 @@ class ResetAdmin extends BaseHandler {
     }
 
     async handle(params, client) {
-        console.log(params.secret_key, this.core.cfg.secret.reset_key);
         if (params.secret_key !== this.core.cfg.secret.reset_key)
             return this.complete(client, null, 'Секретный ключ не верен!');
 
